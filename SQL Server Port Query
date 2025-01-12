@@ -1,0 +1,26 @@
+To determine the SQL Server port currently in use, you can use the following query. This query retrieves the port number from the sys.dm_exec_connections dynamic management view or by inspecting the SQL Server configuration:
+
+
+Option 1: Using Dynamic Management Views
+sql
+SELECT local_net_address AS IPAddress, 
+       local_tcp_port AS Port
+FROM sys.dm_exec_connections
+WHERE session_id = @@SPID;
+This query gives you the IP Address and Port of the current SQL Server instance connection.
+
+Option 2: Using Configuration Manager
+If you prefer to query the SQL Server configuration, use the xp_readerrorlog stored procedure to parse the error log for the port information.
+
+sql
+EXEC xp_readerrorlog 0, 1, N'Server is listening on';
+The output will include lines indicating the IP address and port, such as:
+
+Server is listening on [ 'any' <ipv4> 1433].
+
+
+Option 3: Using sys.configurations (for static configurations)
+If the port is statically set in the configuration, you can retrieve it as follows:
+
+EXEC sp_readerrorlog 0, 1, 'listening';
+
